@@ -1,19 +1,28 @@
 import 'package:business_app/components/reusable_textfield.dart';
+import 'package:business_app/constants.dart';
+import 'package:business_app/models/business_data.dart';
 import 'package:business_app/pages/create_profile_screen/widgets/business_card_widget.dart';
 import 'package:business_app/pages/create_profile_screen/widgets/confidenticail_card_widget.dart';
+import 'package:business_app/pages/create_profile_screen/widgets/create_investor_profile.dart';
+import 'package:business_app/pages/create_profile_screen/widgets/investor_profile_widget.dart';
 import 'package:business_app/pages/create_profile_screen/widgets/upload_media_widget.dart';
+import 'package:business_app/provider/create_profile_provider.dart';
+import 'package:business_app/shared_preference/shared_preference.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:provider/provider.dart';
 
 class CreateProfileScreen extends StatefulWidget {
   const CreateProfileScreen({
     Key? key,
     this.screenHeading,
     required this.isBusinessProfile,
+    required this.profile,
   }) : super(key: key);
 
   final String? screenHeading;
   final bool isBusinessProfile;
+  final String profile;
 
   @override
   _CreateProfileScreenState createState() => _CreateProfileScreenState();
@@ -21,20 +30,72 @@ class CreateProfileScreen extends StatefulWidget {
 
 class _CreateProfileScreenState extends State<CreateProfileScreen> {
   final confidentialForm = GlobalKey<FormState>();
+  final businessForm = GlobalKey<FormState>();
+  final investorForm = GlobalKey<FormState>();
+
+
   final TextEditingController name = TextEditingController();
   final TextEditingController officialEmail = TextEditingController();
+  final TextEditingController phone = TextEditingController();
 
-  final verticalGap =  SizedBox(height: 15.h,);
+// business
+  final TextEditingController businessName = TextEditingController();
+  final TextEditingController businessWebsite = TextEditingController();
+  final TextEditingController businessBank = TextEditingController();
+  // final TextEditingController businessName = TextEditingController();
+  final TextEditingController businessLocation = TextEditingController();
+  final TextEditingController businessIndustry = TextEditingController();
+  final TextEditingController businessEstablishedYear = TextEditingController();
+  final TextEditingController businessNumberOfEmployees =
+      TextEditingController();
+
+
+      // investor
+      final TextEditingController investorName = TextEditingController();
+  final TextEditingController investorIndustry = TextEditingController();
+  final TextEditingController investorCompanyName = TextEditingController();
+  // final TextEditingController businessName = TextEditingController();
+  final TextEditingController investorLocation = TextEditingController();
+  final TextEditingController investorStatus = TextEditingController();
+  final TextEditingController investorSectorPreference = TextEditingController();
+  final TextEditingController investmentRange =
+      TextEditingController();
+      final TextEditingController investorSummary = TextEditingController();
+
+  final verticalGap = SizedBox(
+    height: 15.h,
+  );
+  bool _isInitialized = false;
+
+  void initState() {
+    super.initState();
+    print("profile is ${widget.profile}");
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Material(
+    Provider.of<CreateProfileProvider>(context, listen: false)
+        .initializeProvider();
+  return Material(
       child: SafeArea(
         child: GestureDetector(
           onTap: () {
             FocusScope.of(context).unfocus();
           },
           child: Scaffold(
+            backgroundColor: backgroundColor,
+            appBar: AppBar(
+              backgroundColor: backgroundColor,
+              title: Text(
+                widget.screenHeading.toString(),
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+            ),
             body: Stack(
               children: [
                 Padding(
@@ -43,28 +104,130 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        Text(widget.screenHeading.toString()),
-                        ConfidenticailCardWidget(),
+                        widget.profile == "Investor" ? const InvestorProfileWidget()
+                        : const SizedBox.shrink(),
+                        ConfidenticailCardWidget(
+                          formKey: confidentialForm,
+                          email: officialEmail,
+                          name: name,
+                          phone: phone,
+                        ),
                         verticalGap,
-                        BusinessCardWidget(),
+                        widget.profile == "Business" ?
+                         BusinessCardWidget(
+                          formKey: businessForm,
+                          businessBank: businessBank,
+                          businessEstablishedYear: businessEstablishedYear,
+                          businessIndustry: businessIndustry,
+                          businessLocation: businessLocation,
+                          businessName: businessName,
+                          businessNumberOfEmployees: businessNumberOfEmployees,
+                          businessWebsite: businessWebsite,
+                        )
+                        : widget.profile == "Investor" ?  CreateInvestorProfile(
+                          formKey: investorForm,
+                          investorSectorPreferred: investorSectorPreference,
+                          investorCompanyName: investorCompanyName,
+                          investorIndustry: investorIndustry,
+                          investorInvestmentRange: investmentRange,
+                          investorLocation: investorLocation,
+                          investorStatus: investorStatus,
+                          investorSummary: investorSummary,
+
+                        ): SizedBox.shrink(),
                         verticalGap,
-                        UploadMediaWidget()
+                        widget.profile == "Business" ? 
+                        const UploadMediaWidget(): widget.profile == "Investor" ? SizedBox.shrink() :SizedBox.shrink(),
+                        SizedBox(
+                          height: 65.h,
+                        )
                       ],
                     ),
                   ),
                 ),
-
-                // Align(
-                //   alignment: Alignment.bottomCenter,
-                //   child: Container(
-                //     height: 80,
-                //     width: 200,
-                //     color: Colors.yellow,
-                //   ),
-                // )
+                _saveButton(context),
               ],
             ),
           ),
+        ),
+      ),
+    );
+  }
+
+  _saveButton(BuildContext context) {
+    return Align(
+      alignment: Alignment.bottomCenter,
+      child: Container(
+        height: 60.h,
+        width: double.infinity,
+        decoration: BoxDecoration(color: Colors.white, boxShadow: [
+          BoxShadow(blurRadius: 2.r, color: Colors.grey, offset: Offset(0, -4))
+        ]),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            InkWell(
+              onTap: () {
+                print("click dave");
+
+                if (businessForm.currentState!.validate() || confidentialForm.currentState!.validate()) {
+                  BusinessData businessData = BusinessData(
+                    nameOfTheBusiness: businessName.text,
+                    businessWebsite: businessWebsite.text,
+                    businessBank: businessBank.text,
+                    location: businessLocation.text,
+                    businessIndustry: businessIndustry.text,
+                    businessEstablishedYear: businessEstablishedYear.text,
+                    numberOfEmployees: businessNumberOfEmployees.text,
+                  );
+
+                  saveToSharedPreferences().saveBusinessData(businessData);
+                }
+
+// BusinessData businessData = BusinessData(
+//                   nameOfTheBusiness: businessName.text,
+//                   businessWebsite: businessWebsite.text,
+//                   businessBank: businessBank.text,
+//                   location: businessLocation.text,
+//                   businessIndustry: businessIndustry.text,
+//                   businessEstablishedYear: businessEstablishedYear.text,
+//                   numberOfEmployees: businessNumberOfEmployees.text,
+
+//                 );
+
+//                 saveToSharedPreferences().saveBusinessData(businessData);
+
+                // saveToSharedPreferences().saveBusinessData(
+                //   businessName.text,
+                //   businessWebsite.text,
+                //   businessBank.text,
+                //   businessLocation.text,
+                //   businessIndustry.text,
+                //   businessEstablishedYear.text,
+                //   businessNumberOfEmployees.text);
+
+                //   saveToSharedPreferences().getData();
+              },
+              child: Container(
+                height: 35.h,
+                width: 100.w,
+                decoration: BoxDecoration(
+                  color: buttonColor,
+                  borderRadius: BorderRadius.circular(8.r),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      "Save",
+                      style: TextStyle(
+                          fontSize: 14.sp, fontWeight: FontWeight.w500),
+                    )
+                  ],
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );

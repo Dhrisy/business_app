@@ -13,16 +13,7 @@ import 'package:provider/provider.dart';
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-try {
-    await Hive.initFlutter();
-    if(!Hive.isAdapterRegistered(UserModelAdapter().typeId)){
-      Hive.registerAdapter(UserModelAdapter());
-    }
-
-} catch (e) {
-  print("MAIN ERROR IS $e");
-  
-}  runApp(const MyApp());
+ runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {

@@ -1,3 +1,4 @@
+import 'package:business_app/animation.dart';
 import 'package:business_app/components/reusable_textfield.dart';
 import 'package:business_app/constants.dart';
 import 'package:business_app/pages/home/home.dart';
@@ -6,6 +7,7 @@ import 'package:business_app/provider/authentication_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 
 class LoginScreen extends StatelessWidget {
@@ -84,10 +86,11 @@ class LoginScreen extends StatelessWidget {
                           controller: password,
                           hintText: "Enter your password",
                           prefixIcon: Icons.lock_outline,
+                          password: true,
                           suffixIcon: authProvider.viewPassword
                               ? Icons.visibility
                               : Icons.visibility_off,
-                              keyBoard: TextInputType.number,
+                          keyBoard: TextInputType.text,
                           obscureText: authProvider.viewPassword ? false : true,
                           validation: (_) {
                             if (password.text == "") {
@@ -175,21 +178,24 @@ class LoginScreen extends StatelessWidget {
                             borderRadius:
                                 BorderRadius.circular(12), // Rounded corners
                           ),
-                          padding: EdgeInsets.symmetric(
+                          padding: const EdgeInsets.symmetric(
                               horizontal: 32, vertical: 16), // Padding
                         ),
-                        onPressed: () {
-                           Navigator.push(
+                        onPressed: () async{
+                          if (loginFormKey.currentState!.validate()) {
+                            try {
+                            await authProvider.loginWithEmailAndPassword(
+                                context, email.text, password.text);
+                            Navigator.push(
                                 context,
-                                MaterialPageRoute(
-                                    builder: (context) => Home()));
-                          // if (loginFormKey.currentState!.validate()) {
-                          //   authProvider.setLogged(true);
-                          //   Navigator.push(
-                          //       context,
-                          //       MaterialPageRoute(
-                          //           builder: (context) => Home()));
-                          // }
+                                CustomPageRoute(page: const Home()));
+                          } catch (e) {
+                            Get.snackbar("Something went wrong", "$e");
+                          } 
+                          }else{
+                            Get.snackbar("Hello", "Please enter required fields");
+                          }
+                        
                         },
                         child: Text(
                           "Login",
@@ -239,6 +245,11 @@ class LoginScreen extends StatelessWidget {
                         ),
                       ],
                     ),
+                  
+                  TextButton(onPressed: (){
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => Home()));
+                  }, child: Text("click"))
+                  
                   ],
                 ),
               ),

@@ -14,6 +14,7 @@ class ReusableTextfield extends StatefulWidget {
    this.suffixIconAction,
    this.obscureText,
    this.readOnly,
+   this.password
    
    })
       : super(key: key);
@@ -27,6 +28,7 @@ class ReusableTextfield extends StatefulWidget {
   final VoidCallback? suffixIconAction;
   final bool? obscureText;
   final bool? readOnly;
+  final bool? password;
 
   @override
   _ReusableTextfieldState createState() => _ReusableTextfieldState();
@@ -42,6 +44,8 @@ class _ReusableTextfieldState extends State<ReusableTextfield> {
       validator: widget.validation,
     keyboardType: widget.keyBoard,
     readOnly: widget.readOnly ?? false,
+    maxLines: widget.password == true ? 1 : null,
+    // contentInsertionConfiguration: true,
     obscureText: widget.obscureText ?? false,
       decoration: InputDecoration(
         suffixIcon: widget.suffixIcon != null

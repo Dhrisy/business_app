@@ -1,3 +1,4 @@
+import 'package:business_app/animation.dart';
 import 'package:business_app/components/reusable_textfield.dart';
 import 'package:business_app/constants.dart';
 import 'package:business_app/models/UserModel.dart';
@@ -148,6 +149,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                     : Icons.visibility_off,
                                 obscureText:
                                     authProvider.viewPassword ? false : true,
+                                password: true,
                                 validation: (_) {
                                   // final passwordRegExp = RegExp(
                                   //     r'^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$');
@@ -195,34 +197,35 @@ class _SignupScreenState extends State<SignupScreen> {
                             ),
                             onPressed: () async {
                               if (signFormKey.currentState!.validate()) {
-                                debugPrint("Start");
-                                final provider =
+                                FirebaseAuth _auth = FirebaseAuth.instance;
+                                final authProvider =
                                     Provider.of<AuthenticationProvider>(context,
                                         listen: false);
-                                FirebaseAuth _auth = FirebaseAuth.instance;
-                                // try {
-                                //   final newUser = await _auth
-                                //       .createUserWithEmailAndPassword(
-                                //           email: "aa@gmail.com",
-                                //           password: "1234567890");
-                                //   if (newUser != null) {
-                                //     print("SUCESS");
-                                //   } else {
-                                //     print("ERROR");
-                                //   }
-                                // } catch (e) {
-                                //   print('ERROR HAPPENDED');
-                                // }
 
-                                Navigator.push(context, MaterialPageRoute(builder: (conetxt) => Home()));
-                                
+                                try {
+                                  final newUser = await _auth
+                                      .createUserWithEmailAndPassword(
+                                          email: email.text,
+                                          password: password.text);
+                                  if (newUser != null) {
+                                    debugPrint("SUCESS");
+                                    await authProvider.createUserAccount(
+                                        password.text,
+                                        name.text,
+                                        email.text,
+                                        phoneNumber.text);
+
+
+                                        Navigator.push(context, CustomPageRoute(page: const Home()));
+                                  } else {
+                                    print("ERROR");
+                                  }
+                                } catch (e) {
+                                  print('ERROR HAPPENDED');
+                                }
                               } else {
-                                debugPrint("Form fields are not valid");
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                      content: Text(
-                                          'Please fill in all required fields correctly')),
-                                );
+                                Get.snackbar(
+                                    "Error", "Please enter required details");
                               }
                             },
                             child: Text(

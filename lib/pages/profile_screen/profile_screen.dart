@@ -1,6 +1,8 @@
+import 'package:business_app/animation.dart';
 import 'package:business_app/components/profile_card_widget.dart';
 import 'package:business_app/constants.dart';
 import 'package:business_app/pages/create_profile_screen/create_profile_screen.dart';
+import 'package:business_app/pages/my_profiles/my_profiles.dart';
 import 'package:business_app/pages/profile_screen/widgets/create_profile_button.dart';
 import 'package:business_app/pages/splash_screen/splash_screen.dart';
 import 'package:business_app/provider/bottom_navigation_provider.dart';
@@ -36,7 +38,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           },
           child: Scaffold(
             body: Container(
-              color: Color.fromARGB(255, 206, 227, 245),
+              color: backgroundColor,
               // color: Color.fromARGB(255, 252, 241, 142),
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
@@ -82,9 +84,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         title: "My profiles",
                         myProfiles: true,
                         callBack: () {
-                          profileProvider.showProfileLists();
-                          print(
-                              "provider is ${profileProvider.showProfileLists}");
+                          Navigator.push(context, CustomPageRoute(page: const MyProfiles()));
+                          // profileProvider.showProfileLists();
+                          // print("provider is ${profileProvider.showProfileLists}");
                         },
                       ),
                       profileProvider.showProfiles
@@ -356,7 +358,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       Navigator.pop(context);
                       Navigator.push(context, 
                       MaterialPageRoute(
-                        builder: (context) => CreateProfileScreen(
+                        builder: (context) => const CreateProfileScreen(
+                          profile: "Business",
                           isBusinessProfile: true,
                           screenHeading: "Create your business profile",
                           )));
@@ -365,12 +368,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
                      CreateProfileButton(
                     title: "Create investor profile", 
                     action: (){
+                      Navigator.pop(context);
+                      Navigator.push(context, 
+                      MaterialPageRoute(
+                        builder: (context) => const CreateProfileScreen(
+                          profile: "Investor",
+                          isBusinessProfile: false,
+                          screenHeading: "Create your investor profile",
+                          )));
 
                     }),
                     verticalGap,
                      CreateProfileButton(
                     title: "Create advisor profile", 
                     action: (){
+                      Navigator.pop(context);
+                      Navigator.push(context, 
+                      MaterialPageRoute(
+                        builder: (context) => const CreateProfileScreen(
+                          profile: "Advisor",
+                          isBusinessProfile: false,
+                          screenHeading: "Create your advisor profile",
+                          )));
 
                     }),
 ],
