@@ -1,4 +1,6 @@
+import 'package:business_app/pages/my_profiles/widgets/business_tab.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class MyProfiles extends StatefulWidget {
   const MyProfiles({Key? key}) : super(key: key);
@@ -10,10 +12,13 @@ class MyProfiles extends StatefulWidget {
 class _MyProfilesState extends State<MyProfiles> {
   @override
   Widget build(BuildContext context) {
-    return const Material(
+    return  Material(
       child: SafeArea(
         child: Scaffold(
-          body: DefaultTabController(
+          appBar: AppBar(
+            title: Text("My profiles", style: TextStyle(fontWeight: FontWeight.bold),),
+          ),
+          body: const DefaultTabController(
             length: 3, 
             
             child: Column(
@@ -29,7 +34,7 @@ class _MyProfilesState extends State<MyProfiles> {
                 Expanded(
                   child: TabBarView(
                     children: [
-                      Center(child: Text("Tab 1")),
+                     BusinessTab(),
                       Center(child: Text("Tab 2")),
                       Center(child: Text("Tab 3")),
                     ],

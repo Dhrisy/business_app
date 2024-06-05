@@ -1,3 +1,4 @@
+import 'package:business_app/animation.dart';
 import 'package:business_app/components/reusable_textfield.dart';
 import 'package:business_app/constants.dart';
 import 'package:business_app/models/business_data.dart';
@@ -6,7 +7,9 @@ import 'package:business_app/pages/create_profile_screen/widgets/confidenticail_
 import 'package:business_app/pages/create_profile_screen/widgets/create_investor_profile.dart';
 import 'package:business_app/pages/create_profile_screen/widgets/investor_profile_widget.dart';
 import 'package:business_app/pages/create_profile_screen/widgets/upload_media_widget.dart';
+import 'package:business_app/pages/profile_screen/profile_screen.dart';
 import 'package:business_app/provider/create_profile_provider.dart';
+import 'package:business_app/provider/profile_provider.dart';
 import 'package:business_app/shared_preference/shared_preference.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -33,7 +36,6 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
   final businessForm = GlobalKey<FormState>();
   final investorForm = GlobalKey<FormState>();
 
-
   final TextEditingController name = TextEditingController();
   final TextEditingController officialEmail = TextEditingController();
   final TextEditingController phone = TextEditingController();
@@ -49,18 +51,17 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
   final TextEditingController businessNumberOfEmployees =
       TextEditingController();
 
-
-      // investor
-      final TextEditingController investorName = TextEditingController();
+  // investor
+  final TextEditingController investorName = TextEditingController();
   final TextEditingController investorIndustry = TextEditingController();
   final TextEditingController investorCompanyName = TextEditingController();
   // final TextEditingController businessName = TextEditingController();
   final TextEditingController investorLocation = TextEditingController();
   final TextEditingController investorStatus = TextEditingController();
-  final TextEditingController investorSectorPreference = TextEditingController();
-  final TextEditingController investmentRange =
+  final TextEditingController investorSectorPreference =
       TextEditingController();
-      final TextEditingController investorSummary = TextEditingController();
+  final TextEditingController investmentRange = TextEditingController();
+  final TextEditingController investorSummary = TextEditingController();
 
   final verticalGap = SizedBox(
     height: 15.h,
@@ -81,7 +82,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
   Widget build(BuildContext context) {
     Provider.of<CreateProfileProvider>(context, listen: false)
         .initializeProvider();
-  return Material(
+    return Material(
       child: SafeArea(
         child: GestureDetector(
           onTap: () {
@@ -104,8 +105,9 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        widget.profile == "Investor" ? const InvestorProfileWidget()
-                        : const SizedBox.shrink(),
+                        widget.profile == "Investor"
+                            ? const InvestorProfileWidget()
+                            : const SizedBox.shrink(),
                         ConfidenticailCardWidget(
                           formKey: confidentialForm,
                           email: officialEmail,
@@ -113,31 +115,38 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                           phone: phone,
                         ),
                         verticalGap,
-                        widget.profile == "Business" ?
-                         BusinessCardWidget(
-                          formKey: businessForm,
-                          businessBank: businessBank,
-                          businessEstablishedYear: businessEstablishedYear,
-                          businessIndustry: businessIndustry,
-                          businessLocation: businessLocation,
-                          businessName: businessName,
-                          businessNumberOfEmployees: businessNumberOfEmployees,
-                          businessWebsite: businessWebsite,
-                        )
-                        : widget.profile == "Investor" ?  CreateInvestorProfile(
-                          formKey: investorForm,
-                          investorSectorPreferred: investorSectorPreference,
-                          investorCompanyName: investorCompanyName,
-                          investorIndustry: investorIndustry,
-                          investorInvestmentRange: investmentRange,
-                          investorLocation: investorLocation,
-                          investorStatus: investorStatus,
-                          investorSummary: investorSummary,
-
-                        ): SizedBox.shrink(),
+                        widget.profile == "Business"
+                            ? BusinessCardWidget(
+                                formKey: businessForm,
+                                businessBank: businessBank,
+                                businessEstablishedYear:
+                                    businessEstablishedYear,
+                                businessIndustry: businessIndustry,
+                                businessLocation: businessLocation,
+                                businessName: businessName,
+                                businessNumberOfEmployees:
+                                    businessNumberOfEmployees,
+                                businessWebsite: businessWebsite,
+                              )
+                            : widget.profile == "Investor"
+                                ? CreateInvestorProfile(
+                                    formKey: investorForm,
+                                    investorSectorPreferred:
+                                        investorSectorPreference,
+                                    investorCompanyName: investorCompanyName,
+                                    investorIndustry: investorIndustry,
+                                    investorInvestmentRange: investmentRange,
+                                    investorLocation: investorLocation,
+                                    investorStatus: investorStatus,
+                                    investorSummary: investorSummary,
+                                  )
+                                : SizedBox.shrink(),
                         verticalGap,
-                        widget.profile == "Business" ? 
-                        const UploadMediaWidget(): widget.profile == "Investor" ? SizedBox.shrink() :SizedBox.shrink(),
+                        widget.profile == "Business"
+                            ? const UploadMediaWidget()
+                            : widget.profile == "Investor"
+                                ? SizedBox.shrink()
+                                : SizedBox.shrink(),
                         SizedBox(
                           height: 65.h,
                         )
@@ -155,81 +164,70 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
   }
 
   _saveButton(BuildContext context) {
-    return Align(
-      alignment: Alignment.bottomCenter,
-      child: Container(
-        height: 60.h,
-        width: double.infinity,
-        decoration: BoxDecoration(color: Colors.white, boxShadow: [
-          BoxShadow(blurRadius: 2.r, color: Colors.grey, offset: Offset(0, -4))
-        ]),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            InkWell(
-              onTap: () {
-                print("click dave");
+    return Consumer<ProfileProvider>(
+        builder: (context, profileProvider, child) {
+      return Align(
+        alignment: Alignment.bottomCenter,
+        child: Container(
+          height: 60.h,
+          width: double.infinity,
+          decoration: BoxDecoration(color: Colors.white, boxShadow: [
+            BoxShadow(
+                blurRadius: 2.r, color: Colors.grey, offset: Offset(0, -4))
+          ]),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              InkWell(
+                onTap: () async {
+                  FocusScope.of(context).unfocus();
+                  if (businessForm.currentState!.validate()) {
+                    print("click dave");
+                    await profileProvider.createBusinessProfile(
+                        businessName.text,
+                        businessWebsite.text,
+                        businessBank.text,
+                        businessLocation.text,
+                        businessIndustry.text,
+                        businessEstablishedYear.text,
+                        businessNumberOfEmployees.text);
 
-                if (businessForm.currentState!.validate() || confidentialForm.currentState!.validate()) {
-                  BusinessData businessData = BusinessData(
-                    nameOfTheBusiness: businessName.text,
-                    businessWebsite: businessWebsite.text,
-                    businessBank: businessBank.text,
-                    location: businessLocation.text,
-                    businessIndustry: businessIndustry.text,
-                    businessEstablishedYear: businessEstablishedYear.text,
-                    numberOfEmployees: businessNumberOfEmployees.text,
-                  );
+                    print("SSSSSSSSSSSSSSSSSSSSSSSSSSSS");
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        duration: Duration(seconds: 2),
+                        showCloseIcon: true,
+                        content: Text('SUCCESS'),
+                      ),
+                    );
+                    Navigator.push(
+                        context, CustomPageRoute(page: ProfileScreen()));
+                  }
 
-                  saveToSharedPreferences().saveBusinessData(businessData);
-                }
-
-// BusinessData businessData = BusinessData(
-//                   nameOfTheBusiness: businessName.text,
-//                   businessWebsite: businessWebsite.text,
-//                   businessBank: businessBank.text,
-//                   location: businessLocation.text,
-//                   businessIndustry: businessIndustry.text,
-//                   businessEstablishedYear: businessEstablishedYear.text,
-//                   numberOfEmployees: businessNumberOfEmployees.text,
-
-//                 );
-
-//                 saveToSharedPreferences().saveBusinessData(businessData);
-
-                // saveToSharedPreferences().saveBusinessData(
-                //   businessName.text,
-                //   businessWebsite.text,
-                //   businessBank.text,
-                //   businessLocation.text,
-                //   businessIndustry.text,
-                //   businessEstablishedYear.text,
-                //   businessNumberOfEmployees.text);
-
-                //   saveToSharedPreferences().getData();
-              },
-              child: Container(
-                height: 35.h,
-                width: 100.w,
-                decoration: BoxDecoration(
-                  color: buttonColor,
-                  borderRadius: BorderRadius.circular(8.r),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      "Save",
-                      style: TextStyle(
-                          fontSize: 14.sp, fontWeight: FontWeight.w500),
-                    )
-                  ],
+                },
+                child: Container(
+                  height: 35.h,
+                  width: 100.w,
+                  decoration: BoxDecoration(
+                    color: buttonColor,
+                    borderRadius: BorderRadius.circular(8.r),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        "Save",
+                        style: TextStyle(
+                            fontSize: 14.sp, fontWeight: FontWeight.w500),
+                      )
+                    ],
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
-      ),
-    );
+      );
+    });
   }
 }

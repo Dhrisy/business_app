@@ -81,7 +81,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       verticalGap,
                       ProfileCardWidget(
                         icon: Icons.person_add_alt_1,
-                        title: "My profiles",
+                        title: "My Listing",
                         myProfiles: true,
                         callBack: () {
                           Navigator.push(context, CustomPageRoute(page: const MyProfiles()));
