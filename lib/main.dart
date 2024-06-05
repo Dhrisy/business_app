@@ -1,16 +1,28 @@
+import 'package:business_app/models/UserModel.dart';
 import 'package:business_app/pages/splash_screen/splash_screen.dart';
 import 'package:business_app/provider/authentication_provider.dart';
 import 'package:business_app/provider/bottom_navigation_provider.dart';
+import 'package:business_app/provider/create_profile_provider.dart';
 import 'package:business_app/provider/profile_provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
 
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  runApp(const MyApp());
+try {
+    await Hive.initFlutter();
+    if(!Hive.isAdapterRegistered(UserModelAdapter().typeId)){
+      Hive.registerAdapter(UserModelAdapter());
+    }
+
+} catch (e) {
+  print("MAIN ERROR IS $e");
+  
+}  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -24,7 +36,8 @@ class MyApp extends StatelessWidget {
         providers: [
           ChangeNotifierProvider(create: (context) => BottomNavigationProvider()),
           ChangeNotifierProvider(create: (context) => AuthenticationProvider()),
-          ChangeNotifierProvider(create: (context) => ProfileProvider())
+          ChangeNotifierProvider(create: (context) => ProfileProvider()),
+          ChangeNotifierProvider(create: (context) => CreateProfileProvider())
 
         ],
         child: MaterialApp(

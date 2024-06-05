@@ -1,32 +1,28 @@
+
+
+import 'package:hive/hive.dart';
+
+part 'UserModel.g.dart';
+
+@HiveType(typeId: 1)
 class UserModel {
-  final String name;
-  final String id;
-  final String email;
-  final String phoneNumber;
 
-  UserModel({required this.email, required this.name, required this.id, required this.phoneNumber});
+  @HiveField(0)
+  String name;
 
+  @HiveField(1)
+  String email;
 
-  // convert a user object int a map object
+  @HiveField(2)
+  String password;
 
-  Map<String, dynamic> toMap(){
-    return {
-      "id": id,
-      "name": name,
-      "email": email,
-      "phoneNumber": phoneNumber,
-    };
-  } 
+  @HiveField(3)
+  String phoneNumber;
 
-
-  // create a user object from a map object
-
-  factory UserModel.fromMap(Map<String, dynamic> map){
-    return UserModel(
-      email: map["email"], 
-      name: map["name"], 
-      id: map["user_id"], 
-      phoneNumber: map["phone_number"]
-      );
-  }
+  UserModel({
+    required this.name,
+    required this.email,
+    required this.password,
+    required this.phoneNumber
+  });
 }

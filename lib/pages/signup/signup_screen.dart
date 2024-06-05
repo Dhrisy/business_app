@@ -1,5 +1,6 @@
 import 'package:business_app/components/reusable_textfield.dart';
 import 'package:business_app/constants.dart';
+import 'package:business_app/models/UserModel.dart';
 import 'package:business_app/pages/home/home.dart';
 import 'package:business_app/pages/login/login_screen.dart';
 import 'package:business_app/provider/authentication_provider.dart';
@@ -8,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
 
 class SignupScreen extends StatefulWidget {
@@ -23,6 +25,7 @@ class _SignupScreenState extends State<SignupScreen> {
   final TextEditingController phoneNumber = TextEditingController();
   final TextEditingController name = TextEditingController();
   final signFormKey = GlobalKey<FormState>();
+  Box? box;
 
   final verticalGap = SizedBox(
     height: 8.h,
@@ -190,35 +193,29 @@ class _SignupScreenState extends State<SignupScreen> {
                               padding: const EdgeInsets.symmetric(
                                   horizontal: 32, vertical: 16), // Padding
                             ),
-                            onPressed: () {
+                            onPressed: () async {
                               if (signFormKey.currentState!.validate()) {
                                 debugPrint("Start");
-                                Navigator.push(context, 
-                                MaterialPageRoute(builder: (context) => Home()));
-                                // Navigator.pushAndRemoveUntil(context, newRoute, predicate)
+                                final provider =
+                                    Provider.of<AuthenticationProvider>(context,
+                                        listen: false);
+                                FirebaseAuth _auth = FirebaseAuth.instance;
                                 // try {
-                                //   final provider =
-                                //       Provider.of<AuthenticationProvider>(
-                                //           context,
-                                //           listen: false);
-                                //           provider.createNewUserAccount(email.text, password.text, name.text, phoneNumber.text);
-                                //           // provider.signUpWithEmailAndPassword(context,email.text, password.text);
-                                //   // final currentUser = FirebaseAuth.instance
-                                //   //     .currentUser; // Get the current user
-                                //   // if (currentUser != null) {
-                                //   //   provider.addUserToFirebase(
-                                //   //       currentUser,
-                                //   //       email.text,
-                                //   //       name.text,
-                                //   //       phoneNumber.text);
-                                //   //   Get.snackbar("done", "done");
-                                //   // } else {
-                                //   //   debugPrint("Current user is null");
-                                //   //   // Handle the scenario when currentUser is null
-                                //   // }
+                                //   final newUser = await _auth
+                                //       .createUserWithEmailAndPassword(
+                                //           email: "aa@gmail.com",
+                                //           password: "1234567890");
+                                //   if (newUser != null) {
+                                //     print("SUCESS");
+                                //   } else {
+                                //     print("ERROR");
+                                //   }
                                 // } catch (e) {
-                                //   debugPrint("$e");
+                                //   print('ERROR HAPPENDED');
                                 // }
+
+                                Navigator.push(context, MaterialPageRoute(builder: (conetxt) => Home()));
+                                
                               } else {
                                 debugPrint("Form fields are not valid");
                                 ScaffoldMessenger.of(context).showSnackBar(
@@ -227,7 +224,6 @@ class _SignupScreenState extends State<SignupScreen> {
                                           'Please fill in all required fields correctly')),
                                 );
                               }
-                            
                             },
                             child: Text(
                               "Sign up",
@@ -288,6 +284,11 @@ class _SignupScreenState extends State<SignupScreen> {
         ),
       ),
     );
+  }
+
+  Future<void> openBox() async {
+    // Open a Hive box
+    box = await Hive.openBox('myBox');
   }
 
   _socialLogin(BuildContext context) {

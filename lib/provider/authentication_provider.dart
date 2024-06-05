@@ -30,8 +30,7 @@ class AuthenticationProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-
-  void setLogged(bool isLogged){
+  void setLogged(bool isLogged) {
     _isLogged = isLogged;
     notifyListeners();
   }
@@ -81,40 +80,61 @@ class AuthenticationProvider extends ChangeNotifier {
     await _googleSignIn.signOut();
   }
 
-
-   createNewUserAccount(
-    String email, String password, String name, String phone
-   
+  Future<void> createUserAccount(
+    String password,
+    String name,
+    String email,
+    String phoneNumber,
   ) async {
     try {
-      // authenticate user and create user
-      await FirebaseAuth.instance
-          .createUserWithEmailAndPassword(email: email, password: password);
-                
-       final userModel = UserModel(
-          email: email,
-           name: name, 
-           id: FirebaseAuth.instance.currentUser!.uid, 
-           phoneNumber: phone);
-
-            final Map<String, dynamic> userData = userModel.toMap();
-
-await FirebaseFirestore.instance
-          .collection('users')
-          .doc(FirebaseAuth.instance.currentUser!.uid)
-          .set(userData);
-    } catch (error) {
- // Handle specific errors if needed
-      if (error is FirebaseAuthException) {
-        // FirebaseAuthException
-        Get.snackbar("Authentication Error", error.message!);
+      UserCredential userCredential =
+          await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: "test@gmail.com",
+        password: "password",
+      );
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'network-request-failed') {
+        // Handle network error
+        print('Network error: ${e.message}');
       } else {
-        // General error
-        Get.snackbar("Something went wrong", "Error occurred: $error");
-      }    }
+        // Handle other errors
+        print('Error: ${e.message}');
+      }
+    }
+
+    // try {
+    //   print("Started");
+
+    //   await FirebaseAuth.instance
+    //       .createUserWithEmailAndPassword(email: email, password: password);
+    //   print("Started");
+
+    //   final userInstance = UserModel(
+    //       email: email,
+    //       name: name,
+    //       id: FirebaseAuth.instance.currentUser!.uid,
+    //       phoneNumber: phoneNumber);
+
+    //   final userData = userInstance.toJson();
+
+    //   await FirebaseFirestore.instance
+    //       .collection("users")
+    //       .doc(FirebaseAuth.instance.currentUser!.uid)
+    //       .set(userData);
+    // } catch (error) {
+    //   if (error is FirebaseAuthException) {
+    //     // FirebaseAuthException
+    //     print("uuuuu");
+    //     print(error);
+    //     // Get.snackbar("Authentication Error", error.message!);
+    //   } else {
+    //     print("aaaaaa");
+    //     // General error
+    //     print(error);
+    //     // Get.snackbar("Something went wrong", "Error occurred: $error");
+    //   }
+    // }
   }
-
-
 
 // // add user into firebase
 //   Future<void> addUserToFirebase(
@@ -133,15 +153,11 @@ await FirebaseFirestore.instance
 //     }
 //   }
 
-
-
-   Future<void> signUpWithEmailAndPassword(
-    BuildContext context,
-    String email,
-   
-    String password) async {
+  Future<void> signUpWithEmailAndPassword(
+      BuildContext context, String email, String password) async {
     try {
-      UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+      UserCredential userCredential =
+          await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
