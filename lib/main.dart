@@ -2,8 +2,10 @@ import 'package:business_app/models/UserModel.dart';
 import 'package:business_app/pages/splash_screen/splash_screen.dart';
 import 'package:business_app/provider/authentication_provider.dart';
 import 'package:business_app/provider/bottom_navigation_provider.dart';
+import 'package:business_app/provider/business_provider.dart';
 import 'package:business_app/provider/create_profile_provider.dart';
 import 'package:business_app/provider/profile_provider.dart';
+import 'package:business_app/provider/search_provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -28,7 +30,9 @@ class MyApp extends StatelessWidget {
           ChangeNotifierProvider(create: (context) => BottomNavigationProvider()),
           ChangeNotifierProvider(create: (context) => AuthenticationProvider()),
           ChangeNotifierProvider(create: (context) => ProfileProvider()),
-          ChangeNotifierProvider(create: (context) => CreateProfileProvider())
+          ChangeNotifierProvider(create: (context) => CreateProfileProvider()),
+          ChangeNotifierProvider(create: (conetxt) => BusinessProvider()),
+          ChangeNotifierProvider(create: (context) => SearchProvider()),
 
         ],
         child: MaterialApp(

@@ -8,6 +8,7 @@ import 'package:business_app/pages/create_profile_screen/widgets/create_investor
 import 'package:business_app/pages/create_profile_screen/widgets/investor_profile_widget.dart';
 import 'package:business_app/pages/create_profile_screen/widgets/upload_media_widget.dart';
 import 'package:business_app/pages/profile_screen/profile_screen.dart';
+import 'package:business_app/provider/bottom_navigation_provider.dart';
 import 'package:business_app/provider/create_profile_provider.dart';
 import 'package:business_app/provider/profile_provider.dart';
 import 'package:business_app/shared_preference/shared_preference.dart';
@@ -50,6 +51,8 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
   final TextEditingController businessEstablishedYear = TextEditingController();
   final TextEditingController businessNumberOfEmployees =
       TextEditingController();
+  final TextEditingController businessLookingFor = TextEditingController();
+  final TextEditingController whichType = TextEditingController();
 
   // investor
   final TextEditingController investorName = TextEditingController();
@@ -117,7 +120,9 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                         verticalGap,
                         widget.profile == "Business"
                             ? BusinessCardWidget(
+                                buisnessLookingFor: businessLookingFor,
                                 formKey: businessForm,
+                                whichType: whichType,
                                 businessBank: businessBank,
                                 businessEstablishedYear:
                                     businessEstablishedYear,
@@ -180,30 +185,68 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
             children: [
               InkWell(
                 onTap: () async {
-                  FocusScope.of(context).unfocus();
-                  if (businessForm.currentState!.validate()) {
-                    print("click dave");
-                    await profileProvider.createBusinessProfile(
-                        businessName.text,
-                        businessWebsite.text,
-                        businessBank.text,
-                        businessLocation.text,
-                        businessIndustry.text,
-                        businessEstablishedYear.text,
-                        businessNumberOfEmployees.text);
+                  // FocusScope.of(context).unfocus();
+                  final navigationProvider =
+                      Provider.of<BottomNavigationProvider>(context,
+                          listen: false);
 
-                    print("SSSSSSSSSSSSSSSSSSSSSSSSSSSS");
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        duration: Duration(seconds: 2),
-                        showCloseIcon: true,
-                        content: Text('SUCCESS'),
-                      ),
-                    );
-                    Navigator.push(
-                        context, CustomPageRoute(page: ProfileScreen()));
+                  if (widget.profile == "Business") {
+                    if (businessForm.currentState!.validate()) {
+                      print("ttttt");
+                      await profileProvider.createBusinessProfile(
+                          businessName.text,
+                          businessWebsite.text,
+                          businessBank.text,
+                          businessLocation.text,
+                          businessIndustry.text,
+                          businessEstablishedYear.text,
+                          businessNumberOfEmployees.text,
+                          businessLookingFor.text,
+                          whichType.text,
+                          officialEmail.text,
+                          name.text,
+                          phone.text);
+
+                      print("SSSSSSSSSSSSSSSSSSSSSSSSSSSS");
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          duration: Duration(seconds: 2),
+                          showCloseIcon: true,
+                          content: Text('SUCCESS'),
+                        ),
+                      );
+                      Navigator.pop(context);
+
+                      navigationProvider.changeIndex(3);
+                    }
+                  } else if (widget.profile == "Investor") {
+                    print("vvvvv");
+                    if (investorForm.currentState!.validate()) {
+                      await profileProvider.createInvestorProfile(
+                          investorCompanyName.text,
+                          investmentRange.text,
+                          investorIndustry.text,
+                          investorLocation.text,
+                          investorSummary.text,
+                          investorStatus.text,
+                          investorSectorPreference.text,
+                          name.text,
+                          officialEmail.text,
+                          phone.text);
+
+                      print("SSSSSSSSSSSSSSSSSSSSSSSSSSSS");
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          duration: Duration(seconds: 2),
+                          showCloseIcon: true,
+                          content: Text('SUCCESS'),
+                        ),
+                      );
+                      Navigator.pop(context);
+
+                      navigationProvider.changeIndex(3);
+                    }
                   }
-
                 },
                 child: Container(
                   height: 35.h,

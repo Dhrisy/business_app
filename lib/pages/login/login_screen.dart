@@ -4,11 +4,13 @@ import 'package:business_app/constants.dart';
 import 'package:business_app/pages/home/home.dart';
 import 'package:business_app/pages/signup/signup_screen.dart';
 import 'package:business_app/provider/authentication_provider.dart';
+import 'package:business_app/shared_preference/shared_preference.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginScreen extends StatelessWidget {
   LoginScreen({Key? key}) : super(key: key);
@@ -181,21 +183,23 @@ class LoginScreen extends StatelessWidget {
                           padding: const EdgeInsets.symmetric(
                               horizontal: 32, vertical: 16), // Padding
                         ),
-                        onPressed: () async{
+                        onPressed: () async {
                           if (loginFormKey.currentState!.validate()) {
                             try {
-                            await authProvider.loginWithEmailAndPassword(
-                                context, email.text, password.text);
-                            Navigator.push(
-                                context,
-                                CustomPageRoute(page: const Home()));
-                          } catch (e) {
-                            Get.snackbar("Something went wrong", "$e");
-                          } 
-                          }else{
-                            Get.snackbar("Hello", "Please enter required fields");
+                              await authProvider.loginWithEmailAndPassword(
+                                  context, email.text, password.text);
+
+                                saveToSharedPreferences()
+                                        .saveSignUpData(email.text);
+                              Navigator.push(
+                                  context, CustomPageRoute(page: const Home()));
+                            } catch (e) {
+                              Get.snackbar("Something went wrong", "$e");
+                            }
+                          } else {
+                            Get.snackbar(
+                                "Hello", "Please enter required fields");
                           }
-                        
                         },
                         child: Text(
                           "Login",
@@ -245,11 +249,12 @@ class LoginScreen extends StatelessWidget {
                         ),
                       ],
                     ),
-                  
-                  TextButton(onPressed: (){
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => Home()));
-                  }, child: Text("click"))
-                  
+                    TextButton(
+                        onPressed: () {
+                          Navigator.push(context,
+                              MaterialPageRoute(builder: (context) => Home()));
+                        },
+                        child: Text("click"))
                   ],
                 ),
               ),

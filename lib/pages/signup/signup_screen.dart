@@ -5,6 +5,7 @@ import 'package:business_app/models/UserModel.dart';
 import 'package:business_app/pages/home/home.dart';
 import 'package:business_app/pages/login/login_screen.dart';
 import 'package:business_app/provider/authentication_provider.dart';
+import 'package:business_app/shared_preference/shared_preference.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -215,8 +216,11 @@ class _SignupScreenState extends State<SignupScreen> {
                                         email.text,
                                         phoneNumber.text);
 
+                                    saveToSharedPreferences()
+                                        .saveSignUpData(email.text);
 
-                                        Navigator.push(context, CustomPageRoute(page: const Home()));
+                                    Navigator.push(context,
+                                        CustomPageRoute(page: const Home()));
                                   } else {
                                     print("ERROR");
                                   }

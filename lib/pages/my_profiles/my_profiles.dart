@@ -35,8 +35,8 @@ class _MyProfilesState extends State<MyProfiles> {
                   child: TabBarView(
                     children: [
                      BusinessTab(),
-                      Center(child: Text("Tab 2")),
-                      Center(child: Text("Tab 3")),
+                      Center(child: Text("Invested list")),
+                      Center(child: Text("Advisor list")),
                     ],
                   ),
                 ),

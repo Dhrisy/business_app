@@ -23,6 +23,13 @@ class saveToSharedPreferences {
   // }
 
 
+Future<void> saveSignUpData( String email) async{
+final prefs = await SharedPreferences.getInstance();
+await prefs.setString("userEmail", email);
+print("USER EMAIL TO SHARED PREFERENCE IS   ${prefs.setString("userEmail", email)}");
+
+}
+
 
 Future<void> saveBusinessData(BusinessData businessData) async {
   print("enter save");
@@ -34,6 +41,7 @@ Future<void> saveBusinessData(BusinessData businessData) async {
     });
     getBusinessData();
   }
+
 
 
 

@@ -14,7 +14,7 @@ class ReusableTextfield extends StatefulWidget {
    this.suffixIconAction,
    this.obscureText,
    this.readOnly,
-   this.password
+   this.password,
    
    })
       : super(key: key);
@@ -29,6 +29,7 @@ class ReusableTextfield extends StatefulWidget {
   final bool? obscureText;
   final bool? readOnly;
   final bool? password;
+  
 
   @override
   _ReusableTextfieldState createState() => _ReusableTextfieldState();

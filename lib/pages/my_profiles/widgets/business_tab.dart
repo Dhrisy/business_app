@@ -1,6 +1,8 @@
 import 'package:business_app/animation.dart';
 import 'package:business_app/constants.dart';
 import 'package:business_app/pages/details_screen/details_screen.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -16,46 +18,53 @@ class _BusinessTabState extends State<BusinessTab> {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
-      child: Column(
-        children: [
-          // Center(
-          //   child: Container(
-          //     height: 45.h,
-          //     width: 100.w,
-          //     decoration: BoxDecoration(
-          //       color: buttonColor
-          //     ),
-          //     child: Text("sdfghj"),
+      child: StreamBuilder<QuerySnapshot>(
+        stream:FirebaseFirestore.instance
+                .collection('business')
+                .where("user_id",
+                    isEqualTo: FirebaseAuth.instance.currentUser!
+                        .uid)
+                .snapshots(),
+        builder: (context, snapshot) {
+           if (snapshot.connectionState == ConnectionState.waiting) {
+                return Center(child: CircularProgressIndicator());
+              }
 
-          //   ),
-          // ),
+              if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                return Center(child: Text('No users found'));
+              }
 
-          Expanded(
-            child: Container(
-              // height: double.infinity,
-              width: double.infinity,
-              color: backgroundColor,
-              child: ListView.separated(
-                  scrollDirection: Axis.vertical,
-                  itemBuilder: (context, index) {
-                    return _buildCard(context);
-                  },
-                  separatorBuilder: (context, index) {
-                    return Container(
-                      height: 0.5.h,
-                      width: double.infinity,
-                      color: Color.fromARGB(255, 216, 215, 215),
-                    );
-                  },
-                  itemCount: 4),
-            ),
-          )
-        ],
+          return Column(
+            children: [
+          
+              Expanded(
+                child: Container(
+                  // height: double.infinity,
+                  width: double.infinity,
+                  color: backgroundColor,
+                  child: ListView.separated(
+                      scrollDirection: Axis.vertical,
+                      itemBuilder: (context, index) {
+                        return _buildCard(context, snapshot.data!.docs[index]);
+                      },
+                      separatorBuilder: (context, index) {
+                        return Container(
+                          height: 0.5.h,
+                          width: double.infinity,
+                          color: Color.fromARGB(255, 216, 215, 215),
+                        );
+                      },
+                      itemCount: snapshot.data!.docs.length),
+                ),
+              )
+            ],
+          );
+        }
       ),
     );
   }
 
-  _buildCard(BuildContext context) {
+  _buildCard(BuildContext context, DocumentSnapshot document) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
       child: Container(
@@ -64,13 +73,6 @@ class _BusinessTabState extends State<BusinessTab> {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(10.r),
-          // boxShadow: [
-          //   BoxShadow(
-          //     color: const Color.fromARGB(255, 201, 199, 199),
-          //     blurRadius: 5.r,
-          //     offset: Offset(3, -3),
-          //   )
-          // ]
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.start,
@@ -86,13 +88,13 @@ class _BusinessTabState extends State<BusinessTab> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     SizedBox(height: 15.w,),
-                    Text("Industry",
+                    Text(document["business_industry"],
                     style: TextStyle(
                       fontSize: 16.sp,
                       fontWeight: FontWeight.w500
                     ),
                     ),
-                    Text("Company name",
+                    Text(document["company_name"],
                     style: TextStyle(
                       fontSize: 14.sp,
                       fontWeight: FontWeight.w500
@@ -100,7 +102,7 @@ class _BusinessTabState extends State<BusinessTab> {
                     Row(
                       children: [
                         Icon(Icons.place, size: 14.sp,),
-                        Text("Location",
+                        Text(document["business_location"],
                         style: TextStyle(
                           fontSize: 14.sp,
                           fontWeight: FontWeight.w300
@@ -110,7 +112,7 @@ class _BusinessTabState extends State<BusinessTab> {
                     Row(
                       children: [
                         Icon(Icons.currency_rupee_sharp, size: 25.sp,),
-                        Text("Price",
+                        Text("5,00,000",
                         style: TextStyle(
                           fontSize: 16.sp,
                           fontWeight: FontWeight.w600
@@ -124,7 +126,10 @@ class _BusinessTabState extends State<BusinessTab> {
                   padding: const EdgeInsets.only(bottom: 15),
                   child: InkWell(
                     onTap: (){
-                      Navigator.push(context, CustomPageRoute(page: DetailsScreen(details: "Business")));
+                      Navigator.push(context, 
+                      CustomPageRoute(page: DetailsScreen(
+                        title: document["company_name"],
+                         businessDetails: document, profile: "Business")));
                     },
                     child: Container(
                       height: 35.h,

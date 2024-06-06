@@ -12,6 +12,8 @@ class BusinessCardWidget extends StatefulWidget {
     required this.businessName,
     required this.businessNumberOfEmployees,
     required this.businessWebsite,
+    required this.buisnessLookingFor,
+    required this.whichType,
     required this.formKey,
   }) : super(key: key);
   final TextEditingController businessName;
@@ -21,6 +23,8 @@ class BusinessCardWidget extends StatefulWidget {
   final TextEditingController businessIndustry;
   final TextEditingController businessEstablishedYear;
   final TextEditingController businessNumberOfEmployees;
+  final TextEditingController buisnessLookingFor;
+  final TextEditingController whichType;
   final GlobalKey<FormState> formKey;
 
   @override
@@ -171,6 +175,38 @@ class _BusinessCardWidgetState extends State<BusinessCardWidget> {
                 controller: widget.businessNumberOfEmployees,
                 validation: (_) {
                   if (widget.businessNumberOfEmployees.text == "") {
+                    return "This field is required";
+                  }
+                  return null;
+                },
+              ),
+              verticalGap,
+              Text(
+                "What are you looking for",
+                style: textStyle,
+              ),
+              verticalGap,
+              ReusableTextfield(
+                
+                controller: widget.buisnessLookingFor,
+                validation: (_) {
+                  if (widget.buisnessLookingFor.text == "") {
+                    return "This field is required";
+                  }
+                  return null;
+                },
+              ),
+              verticalGap,
+              Text(
+                "Which type is your business",
+                style: textStyle,
+              ),
+               verticalGap,
+              ReusableTextfield(
+                hintText: "eg: seeking loan, business sale...",
+                controller: widget.whichType,
+                validation: (_) {
+                  if (widget.whichType.text == "") {
                     return "This field is required";
                   }
                   return null;
