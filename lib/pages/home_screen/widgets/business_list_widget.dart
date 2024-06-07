@@ -195,11 +195,12 @@ class _BusinessListWidgetState extends State<BusinessListWidget> {
                       ],
                     ),
                     widget.bookamarkIds
-                                    .contains(widget.businessData[index].id) 
+                                    .contains(widget.businessData[index].id) || toggleBookMark == false 
                                     ? Align(
                         alignment: Alignment.topRight,
                         child: InkWell(
                           onTap: () {
+                            
                             print(toggleBookMark);
                             setToggle(index);
                             print(toggleBookMark);

@@ -54,7 +54,10 @@ class InvestorData {
       "email":email,
       "phone": phone,
       "business_bank": "dgjbkjbkdhgigak",
-      "business_location": "Chennai"
+      "business_location": "Chennai",
+      "looking_for": "",
+      "which_type": "",
+      "rupess": "20000"
     };
   }
 }

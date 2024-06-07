@@ -29,53 +29,56 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-        child: SafeArea(
-            child: Scaffold(
-      drawer: Container(
-        width: 200.w,
-        height: double.infinity,
-      ),
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        leading: InkWell(onTap: () {}, child: const Icon(Icons.menu)),
-        title: const Text("Smergers india"),
-      ),
-      body: Consumer<ProfileProvider>(
-          builder: (context, userProfileProvider, child) {
-        return StreamBuilder<QuerySnapshot>(
-            stream: FirebaseFirestore.instance
-                .collection('users')
-                .where("uid",
-                    isEqualTo: FirebaseAuth.instance.currentUser!
-                        .uid)
-                .snapshots(),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return Center(child: CircularProgressIndicator());
-              }
-
-              if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                return Center(child: Text('No users found'));
-              }
-
-              var userDoc = snapshot.data!.docs.first;
-              print("name is ${userDoc["name"]}");
-          List<String> bookmarkedIds = List<String>.from(userDoc['bookmarked'] ?? []);
-
-
-
-              return SingleChildScrollView(
-                child: Column(
-                  children: [
-                     _businessListConatiner(context, bookmarkedIds),
-                     _investorListContainer(context)
-                  ],
-                ),
-              );
-            });
-      }),
-    )));
+    return PopScope(
+      canPop: false,
+      child: Material(
+          child: SafeArea(
+              child: Scaffold(
+        drawer: Container(
+          width: 200.w,
+          height: double.infinity,
+        ),
+        appBar: AppBar(
+          automaticallyImplyLeading: false,
+          // le/ading: InkWell(onTap: () {}, child: const Icon(Icons.menu)),
+          title: const Text("Smergers india"),
+        ),
+        body: Consumer<ProfileProvider>(
+            builder: (context, userProfileProvider, child) {
+          return StreamBuilder<QuerySnapshot>(
+              stream: FirebaseFirestore.instance
+                  .collection('users')
+                  .where("uid",
+                      isEqualTo: FirebaseAuth.instance.currentUser!
+                          .uid)
+                  .snapshots(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Center(child: CircularProgressIndicator());
+                }
+      
+                if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                  return Center(child: Text('No users found'));
+                }
+      
+                var userDoc = snapshot.data!.docs.first;
+                print("name is ${userDoc["name"]}");
+            List<String> bookmarkedIds = List<String>.from(userDoc['bookmarked'] ?? []);
+      
+      
+      
+                return SingleChildScrollView(
+                  child: Column(
+                    children: [
+                       _businessListConatiner(context, bookmarkedIds),
+                       _investorListContainer(context)
+                    ],
+                  ),
+                );
+              });
+        }),
+      ))),
+    );
   }
 
 

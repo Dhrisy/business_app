@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class PersonalDetails extends StatefulWidget {
   const PersonalDetails({Key? key, required this.userData}) : super(key: key);
@@ -17,7 +18,13 @@ class _PersonalDetailsState extends State<PersonalDetails> {
         child: Scaffold(
           appBar: AppBar(
             automaticallyImplyLeading: true,
-            title: Text("Personal etails"),
+            title: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text("Personal details"),
+                Text("edit details", style: TextStyle(fontSize: 14.sp),),
+              ],
+            ),
           ),
           body: Column(
             children: [

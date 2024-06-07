@@ -16,6 +16,7 @@ Map<String, dynamic> toJson() => {
 "name": name,
 "email": email,
 "phone_number": phoneNumber,
+"bookmarked": []
 
 };
 

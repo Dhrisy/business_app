@@ -4,6 +4,7 @@ import 'package:business_app/constants.dart';
 import 'package:business_app/pages/home/home.dart';
 import 'package:business_app/pages/signup/signup_screen.dart';
 import 'package:business_app/provider/authentication_provider.dart';
+import 'package:business_app/provider/bottom_navigation_provider.dart';
 import 'package:business_app/shared_preference/shared_preference.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -18,6 +19,7 @@ class LoginScreen extends StatelessWidget {
   final TextEditingController email = TextEditingController();
   final TextEditingController password = TextEditingController();
   final loginFormKey = GlobalKey<FormState>();
+
   final verticalGap = SizedBox(
     height: 10.h,
   );
@@ -31,6 +33,7 @@ class LoginScreen extends StatelessWidget {
           },
           child: Consumer<AuthenticationProvider>(
               builder: (context, authProvider, child) {
+            // authProvider.setLoadButton(false);
             return Form(
               key: loginFormKey,
               child: Padding(
@@ -132,7 +135,7 @@ class LoginScreen extends StatelessWidget {
                         InkWell(
                           onTap: () async {
                             authProvider.showLoading(true);
-                            await authProvider.signInWithGoogle();
+                            await authProvider.signInWithGoogle(context);
                             authProvider.showLoading(false);
                           },
                           child: Container(
@@ -140,9 +143,9 @@ class LoginScreen extends StatelessWidget {
                             width: 30.h,
                             decoration:
                                 const BoxDecoration(shape: BoxShape.circle),
-                            child: authProvider.isLoading
+                            child: authProvider.loadButton
                                 ? const CircularProgressIndicator(
-                                    color: buttonColor,
+                                    color: Colors.white,
                                     strokeWidth: 1,
                                     strokeAlign: 0.5,
                                   )
@@ -159,13 +162,13 @@ class LoginScreen extends StatelessWidget {
                             fit: BoxFit.cover,
                           ),
                         ),
-                        Container(
-                          height: 30.h,
-                          width: 30.h,
-                          decoration:
-                              const BoxDecoration(shape: BoxShape.circle),
-                          child: Image.asset("assets/images/linkedIn.png"),
-                        ),
+                        // Container(
+                        //   height: 30.h,
+                        //   width: 30.h,
+                        //   decoration:
+                        //       const BoxDecoration(shape: BoxShape.circle),
+                        //   child: Image.asset("assets/images/linkedIn.png"),
+                        // ),
                       ],
                     ),
                     verticalGap,
@@ -184,13 +187,21 @@ class LoginScreen extends StatelessWidget {
                               horizontal: 32, vertical: 16), // Padding
                         ),
                         onPressed: () async {
+                          final navigationProvider =
+                              Provider.of<BottomNavigationProvider>(context,
+                                  listen: false);
                           if (loginFormKey.currentState!.validate()) {
+                            authProvider.setLoadButton(true);
+
                             try {
                               await authProvider.loginWithEmailAndPassword(
                                   context, email.text, password.text);
 
-                                saveToSharedPreferences()
-                                        .saveSignUpData(email.text);
+                              saveToSharedPreferences()
+                                  .saveSignUpData(email.text);
+                              authProvider.setLoadButton(false);
+                              navigationProvider.changeIndex(0);
+
                               Navigator.push(
                                   context, CustomPageRoute(page: const Home()));
                             } catch (e) {
@@ -201,11 +212,17 @@ class LoginScreen extends StatelessWidget {
                                 "Hello", "Please enter required fields");
                           }
                         },
-                        child: Text(
-                          "Login",
-                          style:
-                              TextStyle(fontSize: 18.sp, color: Colors.white),
-                        ),
+                        child: authProvider.loadButton
+                            ? const CircularProgressIndicator(
+                                color: Colors.white,
+                                strokeWidth: 1,
+                                strokeAlign: 0.5,
+                              )
+                            : Text(
+                                "Login",
+                                style: TextStyle(
+                                    fontSize: 18.sp, color: Colors.white),
+                              ),
                       ),
                     ),
                     verticalGap,
@@ -249,12 +266,12 @@ class LoginScreen extends StatelessWidget {
                         ),
                       ],
                     ),
-                    TextButton(
-                        onPressed: () {
-                          Navigator.push(context,
-                              MaterialPageRoute(builder: (context) => Home()));
-                        },
-                        child: Text("click"))
+                    // TextButton(
+                    //     onPressed: () {
+                    //       Navigator.push(context,
+                    //           MaterialPageRoute(builder: (context) => Home()));
+                    //     },
+                    //     child: Text("click"))
                   ],
                 ),
               ),

@@ -31,7 +31,7 @@ class _BusinessTabState extends State<BusinessTab> {
               }
 
               if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                return Center(child: Text('No users found'));
+                return Center(child: Text('Nothing added yet'));
               }
 
           return Column(

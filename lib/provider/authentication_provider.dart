@@ -1,3 +1,4 @@
+import 'package:business_app/animation.dart';
 import 'package:business_app/models/UserModel.dart';
 import 'package:business_app/pages/home/home.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -16,9 +17,17 @@ class AuthenticationProvider extends ChangeNotifier {
   bool _isLoading = false;
   bool _isLogged = false;
 
+  bool loadButton = false;
+
   bool get viewPassword => _viewPassword;
   bool get isLoading => _isLoading;
   bool get isLogged => _isLogged;
+
+
+  void setLoadButton(bool val){
+    loadButton = val;
+    notifyListeners();
+  }
 
   void toggleViewPassword() {
     _viewPassword = !_viewPassword;
@@ -37,7 +46,7 @@ class AuthenticationProvider extends ChangeNotifier {
   }
 
 // google sign in
-  Future<User?> signInWithGoogle() async {
+  Future<User?> signInWithGoogle(BuildContext context) async {
     try {
       debugPrint("sign in start");
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
@@ -62,6 +71,10 @@ class AuthenticationProvider extends ChangeNotifier {
         String? email = user.email;
         String? phone = user.phoneNumber;
         String? name = user.displayName;
+
+        await createUserAccount("", name!, email!, phone!);
+
+        Navigator.push(context, CustomPageRoute(page: Home()));
 
         {
           // await addUserToFirebase(user, email!, phone!, name!);
@@ -88,6 +101,7 @@ class AuthenticationProvider extends ChangeNotifier {
     String phoneNumber,
   ) async {
     try {
+      print("jjjjjjjjjj");
       // UserCredential userCredential =
       //     await FirebaseAuth.instance.signInWithEmailAndPassword(
       //   email: email,
